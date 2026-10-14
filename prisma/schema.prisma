@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  faxes        Fax[]
+}
+
+model FaxNumber {
+  id        String   @id @default(cuid())
+  number    String   @unique
+  label     String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Fax {
+  id              String    @id @default(cuid())
+  direction       String
+  status          String
+  fromNumber      String
+  toNumber        String
+  pages           Int?
+  telnyxFaxId     String?   @unique
+  mediaPath       String?
+  failureReason   String?
+  notes           String?
+  createdByUserId String?
+  createdBy       User?     @relation(fields: [createdByUserId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deliveredAt     DateTime?
+}
